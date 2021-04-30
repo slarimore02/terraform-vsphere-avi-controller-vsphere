@@ -71,8 +71,7 @@ resource "vsphere_virtual_machine" "avi_controller" {
       "default-gw" = var.controller_gateway
     }
   }
-  wait_for_guest_net_timeout  = 0
-  wait_for_guest_net_routable = false
+  wait_for_guest_net_timeout = "1"
   provisioner "local-exec" {
     command = "bash ${path.module}/files/change-controller-password.sh --controller-address \"${var.controller_ip[count.index]}\" --current-password \"${var.controller_default_password}\" --new-password \"${var.controller_password}\""
   }
