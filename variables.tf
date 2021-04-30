@@ -135,7 +135,7 @@ variable "ipam_networks" {
   default     = [{ portgroup = "", network = "", type = "", static_pool = [""] }]
 }
 variable "vm_folder" {
-  description = "The folder that the Avi Controller VM(s) will be placed in"
+  description = "The folder that the Avi Controller(s) will be placed in"
   type        = string
   default     = ""
 }
