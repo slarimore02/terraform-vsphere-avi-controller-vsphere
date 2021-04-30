@@ -56,4 +56,70 @@ https://avinetworks.com/docs/latest/system-limits/
 
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | >= 0.13.6 |
+| null | 3.0.0 |
+| vsphere | ~> 1.26.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| null | 3.0.0 |
+| vsphere | ~> 1.26.0 |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| additional\_gslb\_sites | The Names and IP addresses of the GSLB Sites that will be configured. | `list(object({ name = string, ip_address = string, dns_vs_name = string }))` | <pre>[<br>  {<br>    "dns_vs_name": "",<br>    "ip_address": "",<br>    "name": ""<br>  }<br>]</pre> | no |
+| avi\_version | The version of Avi that will be deployed | `string` | n/a | yes |
+| boot\_disk\_size | The boot disk size for the Avi controller | `number` | `128` | no |
+| configure\_dns\_profile | Configure Avi DNS Profile for DNS Record Creation for Virtual Services. If set to true the dns\_service\_domain variable must also be set | `bool` | `"false"` | no |
+| configure\_dns\_vs | Create DNS Virtual Service. The configure\_dns\_profile and dns\_vs\_settings variables must also be set for the DNS VS to be created successfully. | `bool` | `"false"` | no |
+| configure\_gslb | Configure GSLB. The gslb\_site\_name, gslb\_domains, and configure\_dns\_vs variables must also be set. Optionally the additional\_gslb\_sites variable can be used to add active GSLB sites | `bool` | `"false"` | no |
+| configure\_gslb\_additional\_sites | Configure Additional GSLB Sites. The additional\_gslb\_sites, gslb\_site\_name, gslb\_domains, and configure\_dns\_vs variables must also be set. Optionally the additional\_gslb\_sites variable can be used to add active GSLB sites | `bool` | `"false"` | no |
+| configure\_ipam\_profile | Configure Avi IPAM Profile for Virtual Service Address Allocation. If set to true the virtualservice\_network variable must also be set | `bool` | `"false"` | no |
+| configure\_se\_mgmt\_network | When true the se\_mgmt\_network\_address variable must be configured. If set to false, DHCP is enabled on the vSphere portgroup that the Avi Service Engines will use for management. | `bool` | `"true"` | no |
+| content\_library | The name of the Content Library that has the Avi Controller Image | `string` | `""` | no |
+| controller\_default\_password | This is the default password for the Avi controller image and can be found in the image download page. | `string` | n/a | yes |
+| controller\_gateway | The IP Address of the gateway for the controller mgmt network | `string` | `""` | no |
+| controller\_ha | If true a HA controller cluster is deployed and configured | `bool` | `"false"` | no |
+| controller\_ip | A list of IP Addresses that will be assigned to the Avi Controller(s). For a full HA deployment the list should contain 3 IP addresses | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+| controller\_mgmt\_portgroup | The vSphere portgroup name that the Avi Controller will use for management | `string` | `""` | no |
+| controller\_netmask | The subnet mask of the controller mgmt network | `string` | `""` | no |
+| controller\_password | The password that will be used authenticating with the Avi Controller. This password be a minimum of 8 characters and contain at least one each of uppercase, lowercase, numbers, and special characters | `string` | n/a | yes |
+| controller\_size | This value determines the number of vCPUs and memory allocated for the Avi Controller. Possible values are small, medium, or large. | `string` | `"small"` | no |
+| dns\_search\_domain | The optional DNS search domain that will be used by the controller | `string` | `""` | no |
+| dns\_servers | The optional DNS servers that will be used for local DNS resolution by the controller. The server should be a valid IP address (v4 or v6) and valid options for type are V4 or V6. Example: [{ addr = "8.8.4.4", type = "V4"}, { addr = "8.8.8.8", type = "V4"}] | `list(object({ addr = string, type = string }))` | `null` | no |
+| dns\_service\_domain | The DNS Domain that will be available for Virtual Services. Avi will be the Authorative Nameserver for this domain and NS records may need to be created pointing to the Avi Service Engine addresses. An example is demo.avi.com | `string` | `""` | no |
+| dns\_vs\_settings | The DNS Virtual Service settings. With the auto\_allocate\_ip option is set to "true" the VS IP address will be allocated via an IPAM profile. Valid options for type are V4 or V6. Example:{ auto\_allocate\_ip = "true", vs\_ip = "", portgroup = "dns-portgroup", network = "192.168.20.0/24", type = "V4" } | `object({ auto_allocate_ip = bool, vs_ip = string, portgroup = string, network = string, type = string, vs_ip = string })` | `null` | no |
+| email\_config | The Email settings that will be used for sending password reset information or for trigged alerts. The default setting will send emails directly from the Avi Controller | `object({ smtp_type = string, from_email = string, mail_server_name = string, mail_server_port = string, auth_username = string, auth_password = string })` | <pre>{<br>  "auth_password": "",<br>  "auth_username": "",<br>  "from_email": "admin@avicontroller.net",<br>  "mail_server_name": "localhost",<br>  "mail_server_port": "25",<br>  "smtp_type": "SMTP_LOCAL_HOST"<br>}</pre> | no |
+| gslb\_domains | A list of GSLB domains that will be configured | `list(string)` | <pre>[<br>  ""<br>]</pre> | no |
+| gslb\_site\_name | The name of the GSLB site the deployed Controller(s) will be a member of. | `string` | `""` | no |
+| ipam\_networks | This variable configures the IPAM network(s). Example: { portgroup = "vs-portgroup", network = "192.168.20.0/24" , gateway = "192.168.20.1", type = "V4", static\_pool = ["192.168.20.10","192.168.20.30"]} | `list(object({ portgroup = string, network = string, type = string, static_pool = list(string) }))` | <pre>[<br>  {<br>    "network": "",<br>    "portgroup": "",<br>    "static_pool": [<br>      ""<br>    ],<br>    "type": ""<br>  }<br>]</pre> | no |
+| name\_prefix | This prefix is appended to the names of the Controller and SEs | `string` | n/a | yes |
+| ntp\_servers | The NTP Servers that the Avi Controllers will use. The server should be a valid IP address (v4 or v6) or a DNS name. Valid options for type are V4, DNS, or V6 | `list(object({ addr = string, type = string }))` | <pre>[<br>  {<br>    "addr": "0.us.pool.ntp.org",<br>    "type": "DNS"<br>  },<br>  {<br>    "addr": "1.us.pool.ntp.org",<br>    "type": "DNS"<br>  },<br>  {<br>    "addr": "2.us.pool.ntp.org",<br>    "type": "DNS"<br>  },<br>  {<br>    "addr": "3.us.pool.ntp.org",<br>    "type": "DNS"<br>  }<br>]</pre> | no |
+| se\_ha\_mode | The HA mode of the Service Engine Group. Possible values active/active, n+m, or active/standby | `string` | `"active/active"` | no |
+| se\_mgmt\_network | This variable configures the SE management network. Example: { network = "192.168.10.0/24" , gateway = "192.168.10.1", type = "V4", static\_pool = ["192.168.10.10","192.168.10.30"]} | `object({ network = string, gateway = string, type = string, static_pool = list(string) })` | <pre>{<br>  "gateway": "",<br>  "network": "",<br>  "static_pool": [<br>    ""<br>  ],<br>  "type": ""<br>}</pre> | no |
+| se\_mgmt\_portgroup | The vSphere portgroup that the Avi Service Engines will use for management | `string` | `null` | no |
+| se\_size | The CPU, Memory, Disk Size of the Service Engines. The default is 1 vCPU, 2 GB RAM, and a 15 GB Disk per Service Engine. Syntax ["cpu\_cores", "memory\_in\_GB", "disk\_size\_in\_GB"] | `list(string)` | <pre>[<br>  "1",<br>  "2",<br>  "15"<br>]</pre> | no |
+| vm\_datastore | The vSphere Datastore that will back the Avi Controller VMs | `string` | `""` | no |
+| vm\_folder | The folder that the Avi Controller(s) will be placed in | `string` | `""` | no |
+| vm\_resource\_pool | The Resource Pool that the Avi Controller(s) will be deployed to | `string` | `""` | no |
+| vm\_template | The name of the Avi Controller Image that is hosted in a Content Library | `string` | `""` | no |
+| vsphere\_datacenter | The vSphere Datacenter that the Avi Controller(s) will be deployed | `string` | `""` | no |
+| vsphere\_password | The password for the user account that will be used for creating vSphere resources | `string` | `""` | no |
+| vsphere\_server | The IP Address or FQDN of the VMware vCenter server | `string` | `""` | no |
+| vsphere\_user | The user account that will be used to create the Avi Controller(s) | `string` | `""` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| controllers | The AVI Controller(s) Information |
+
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
