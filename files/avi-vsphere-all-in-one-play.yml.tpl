@@ -22,6 +22,7 @@
     ansible_become: yes
     ansible_become_password: "{{ password }}"
     se_name_prefix: ${se_name_prefix}
+    vcenter_folder: ${vcenter_folder}
     se_cpu: ${se_cpu}
     se_memory: ${se_memory}
     se_disk: ${se_disk}
@@ -223,6 +224,7 @@
           buffer_se: "0"
           max_se: "10"
           se_name_prefix: "{{ se_name_prefix }}"
+          vcenter_folder: "{{ vcenter_folder }}"
           vcpus_per_se: "{{ se_cpu }}"
           memory_per_se: "{{ se_memory * 1024 }}"
           disk_per_se: "{{ se_disk }}"
@@ -248,6 +250,7 @@
           buffer_se: "1"
           max_se: "10"
           se_name_prefix: "{{ se_name_prefix }}"
+          vcenter_folder: "{{ vcenter_folder }}"
           vcpus_per_se: "{{ se_cpu }}"
           memory_per_se: "{{ se_memory * 1024 }}"
           disk_per_se: "{{ se_disk }}"
@@ -272,6 +275,7 @@
           buffer_se: "0"
           max_se: "2"
           se_name_prefix: "{{ se_name_prefix }}"
+          vcenter_folder: "{{ vcenter_folder }}"
           vcpus_per_se: "{{ se_cpu }}"
           memory_per_se: "{{ se_memory * 1024 }}"
           disk_per_se: "{{ se_disk }}"
@@ -371,6 +375,7 @@
           max_vs_per_se: "2"
           extra_shared_config_memory: 2000
           se_name_prefix: "{{ se_name_prefix }}"
+          vcenter_folder: "{{ vcenter_folder }}"
           realtime_se_metrics:
             duration: "10080"
             enabled: true

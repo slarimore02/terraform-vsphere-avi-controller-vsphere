@@ -13,6 +13,7 @@ locals {
     ntp_servers                     = var.ntp_servers
     email_config                    = var.email_config
     se_name_prefix                  = var.name_prefix
+    vcenter_folder                  = var.vm_folder
     se_cpu                          = var.se_size[0]
     se_memory                       = var.se_size[1]
     se_disk                         = var.se_size[2]
