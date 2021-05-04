@@ -7,11 +7,11 @@ variable "controller_ha" {
   type        = bool
   default     = "false"
 }
-#variable "create_networking" {
-#  description = "This variable controls the portgroup creation for the Avi Controller. When set to false the custom_vpc_name and custom_subnetwork_name must be set."
-#  type        = bool
-#  default     = "true"
-#}
+variable "create_roles" {
+  description = "This variable controls the creation of Avi specific vSphere Roles for the Avi Controller to use. When set to false these roles should already be created and assigned to the vSphere account used by the Avi Controller."
+  type        = bool
+  default     = "false"
+}
 variable "controller_default_password" {
   description = "This is the default password for the Avi controller image and can be found in the image download page."
   type        = string
@@ -52,7 +52,7 @@ variable "configure_dns_profile" {
 variable "dns_service_domain" {
   description = "The DNS Domain that will be available for Virtual Services. Avi will be the Authorative Nameserver for this domain and NS records may need to be created pointing to the Avi Service Engine addresses. An example is demo.avi.com"
   type        = string
-  default     = ""
+  default     = null
 }
 variable "configure_dns_vs" {
   description = "Create DNS Virtual Service. The configure_dns_profile and dns_vs_settings variables must also be set for the DNS VS to be created successfully."
@@ -92,7 +92,6 @@ variable "additional_gslb_sites" {
 variable "vsphere_datacenter" {
   description = "The vSphere Datacenter that the Avi Controller(s) will be deployed"
   type        = string
-  default     = ""
 }
 variable "vm_resource_pool" {
   description = "The Resource Pool that the Avi Controller(s) will be deployed to"
@@ -102,17 +101,14 @@ variable "vm_resource_pool" {
 variable "content_library" {
   description = "The name of the Content Library that has the Avi Controller Image"
   type        = string
-  default     = ""
 }
 variable "vm_datastore" {
   description = "The vSphere Datastore that will back the Avi Controller VMs"
   type        = string
-  default     = ""
 }
 variable "controller_mgmt_portgroup" {
   description = "The vSphere portgroup name that the Avi Controller will use for management"
   type        = string
-  default     = ""
 }
 variable "se_mgmt_portgroup" {
   description = "The vSphere portgroup that the Avi Service Engines will use for management"
@@ -135,45 +131,53 @@ variable "ipam_networks" {
   default     = [{ portgroup = "", network = "", type = "", static_pool = [""] }]
 }
 variable "vm_folder" {
-  description = "The folder that the Avi Controller(s) will be placed in"
+  description = "The folder that the Avi Controller(s) will be placed in. This will be the full path and name of the folder that will be created"
   type        = string
-  default     = ""
 }
 variable "vm_template" {
   description = "The name of the Avi Controller Image that is hosted in a Content Library"
   type        = string
-  default     = ""
 }
 variable "vsphere_user" {
   description = "The user account that will be used to create the Avi Controller(s)"
   type        = string
-  default     = ""
+}
+variable "vsphere_avi_user" {
+  description = "The user account that will be used for accessing vCenter from the Avi Controller(s)"
+  type        = string
+  default     = null
+}
+variable "vsphere_avi_password" {
+  description = "The password for the user account that will be used for accessing vCenter from the Avi Controller(s)"
+  sensitive   = true
+  type        = string
+  default     = null
 }
 variable "vsphere_password" {
   description = "The password for the user account that will be used for creating vSphere resources"
   type        = string
   sensitive   = true
-  default     = ""
 }
 variable "vsphere_server" {
   description = "The IP Address or FQDN of the VMware vCenter server"
   type        = string
-  default     = ""
+}
+variable "compute_cluster" {
+  description = "The name of the vSphere cluster that the Avi Controllers will be deployed to"
+  type        = string
+  default     = null
 }
 variable "controller_ip" {
   description = "A list of IP Addresses that will be assigned to the Avi Controller(s). For a full HA deployment the list should contain 3 IP addresses"
   type        = list(string)
-  default     = [""]
 }
 variable "controller_netmask" {
   description = "The subnet mask of the controller mgmt network"
   type        = string
-  default     = ""
 }
 variable "controller_gateway" {
   description = "The IP Address of the gateway for the controller mgmt network"
   type        = string
-  default     = ""
 }
 variable "boot_disk_size" {
   description = "The boot disk size for the Avi controller"
@@ -206,7 +210,7 @@ variable "dns_servers" {
 variable "dns_search_domain" {
   description = "The optional DNS search domain that will be used by the controller"
   type        = string
-  default     = ""
+  default     = null
 }
 variable "ntp_servers" {
   description = "The NTP Servers that the Avi Controllers will use. The server should be a valid IP address (v4 or v6) or a DNS name. Valid options for type are V4, DNS, or V6"

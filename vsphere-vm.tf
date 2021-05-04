@@ -1,7 +1,7 @@
 locals {
   # Controller Settings used as Ansible Variables
   cloud_settings = {
-    vsphere_user                    = var.vsphere_user
+    vsphere_user                    = var.vsphere_avi_user == null ? var.vsphere_user : var.vsphere_avi_user
     vsphere_server                  = var.vsphere_server
     vm_datacenter                   = var.vsphere_datacenter
     se_mgmt_portgroup               = var.se_mgmt_portgroup
@@ -42,14 +42,19 @@ locals {
     large  = [24, 49152]
   }
 }
+resource "vsphere_folder" "avi" {
+  path          = var.vm_folder
+  type          = "vm"
+  datacenter_id = data.vsphere_datacenter.dc.id
+}
 resource "vsphere_virtual_machine" "avi_controller" {
   count            = var.controller_ha ? 3 : 1
   name             = "${var.name_prefix}-avi-controller-${count.index + 1}"
-  resource_pool_id = data.vsphere_resource_pool.pool.id
+  resource_pool_id = var.compute_cluster != null ? data.vsphere_compute_cluster.avi[0].resource_pool_id : data.vsphere_resource_pool.pool.id
   datastore_id     = data.vsphere_datastore.datastore.id
   num_cpus         = local.controller_sizes[var.controller_size][0]
   memory           = local.controller_sizes[var.controller_size][1]
-  folder           = var.vm_folder
+  folder           = vsphere_folder.avi.path
   network_interface {
     network_id = data.vsphere_network.avi.id
   }
@@ -76,6 +81,13 @@ resource "vsphere_virtual_machine" "avi_controller" {
     command = "bash ${path.module}/files/change-controller-password.sh --controller-address \"${var.controller_ip[count.index]}\" --current-password \"${var.controller_default_password}\" --new-password \"${var.controller_password}\""
   }
 }
+resource "vsphere_compute_cluster_vm_anti_affinity_rule" "avi" {
+  count               = var.controller_ha ? 1 : 0
+  name                = "${var.name_prefix}-avi-controller-vm-anti-affinity-rule"
+  compute_cluster_id  = data.vsphere_compute_cluster.avi[0].id
+  virtual_machine_ids = vsphere_virtual_machine.avi_controller.*.id
+  mandatory           = "true"
+}
 resource "null_resource" "ansible_provisioner" {
   # Changes to any instance of the cluster requires re-provisioning
   triggers = {
@@ -99,9 +111,13 @@ resource "null_resource" "ansible_provisioner" {
     destination = "/home/admin/avi-cleanup.yml"
   }
   provisioner "remote-exec" {
-    inline = [
+    inline = var.vsphere_avi_user == null ? [
       "ansible-playbook avi-vsphere-all-in-one-play.yml -e password=${var.controller_password} -e vsphere_password=${var.vsphere_password} > ansible-playbook.log 2> ansible-error.log",
       "echo Controller Configuration Completed"
+      ] : [
+      "ansible-playbook avi-vsphere-all-in-one-play.yml -e password=${var.controller_password} -e vsphere_password=${var.vsphere_avi_password} > ansible-playbook.log 2> ansible-error.log",
+      "echo Controller Configuration Completed"
     ]
+
   }
 }
