@@ -563,7 +563,7 @@
         api_version: ${avi_version}
         http_method: get
         path: cluster/runtime
-      until: clusterstatus.obj.cluster_state.progress == 100
+      until: clusterstatus.obj.cluster_state.progress is defined
       retries: 10
       delay: 10
       register: clusterstatus
