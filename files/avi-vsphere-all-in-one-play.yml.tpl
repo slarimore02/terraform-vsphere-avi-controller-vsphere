@@ -220,7 +220,6 @@
         tenant: "admin"
         data:
           name: "Default-Group" 
-          avi_credentials: "{{ avi_credentials }}"
           state: present
           cloud_ref: "{{ avi_cloud.obj.url }}"
           ha_mode: HA_MODE_SHARED_PAIR
@@ -246,7 +245,6 @@
         tenant: "admin"
         data:
           name: "Default-Group" 
-          avi_credentials: "{{ avi_credentials }}"
           state: present
           cloud_ref: "{{ avi_cloud.obj.url }}"
           ha_mode: HA_MODE_SHARED
@@ -272,7 +270,6 @@
         tenant: "admin"
         data:
           name: "Default-Group" 
-          avi_credentials: "{{ avi_credentials }}"
           state: present
           cloud_ref: "{{ avi_cloud.obj.url }}"
           ha_mode: HA_MODE_LEGACY_ACTIVE_STANDBY
@@ -558,6 +555,18 @@
         timeout: 600
         sleep: 5
         msg: "Can't connect to GSLB Site - ${site.ip_address}"
+    - name: GSLB Config | Verify Cluster Status
+      avi_api_session:
+        controller: "${site.ip_address}"
+        username: "admin"
+        password: "{{ password }}"
+        api_version: ${avi_version}
+        http_method: get
+        path: cluster/runtime
+      until: clusterstatus.obj.clusterstate.progress == 100
+      retries: 10
+      delay: 10
+      register: clusterstatus
     - name: GSLB Config | Verify DNS configuration
       avi_api_session:
         controller: "${site.ip_address}"
