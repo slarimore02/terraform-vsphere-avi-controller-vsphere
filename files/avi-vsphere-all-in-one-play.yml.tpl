@@ -551,7 +551,13 @@
       register: gslb_results
 %{ endif ~}
 %{ if configure_gslb_additional_sites ~}%{ for site in additional_gslb_sites ~}
-
+    - name: Wait for connection to GSLB Site to become ready
+      wait_for:
+        host: "${site.ip_address}"
+        port: 443
+        timeout: 600
+        sleep: 5
+        msg: "Can't connect to GSLB Site - ${site.ip_address}"
     - name: GSLB Config | Verify DNS configuration
       avi_api_session:
         controller: "${site.ip_address}"
@@ -561,11 +567,9 @@
         http_method: get
         path: virtualservice?name=DNS-VS
       register: dns_vs_verify
-
     - name: Display DNS VS Verify
       ansible.builtin.debug:
         var: dns_vs_verify
-
     - name: GSLB Config | Verify GSLB site configuration
       avi_api_session:
         avi_credentials: "{{ avi_credentials }}"
@@ -579,12 +583,10 @@
           ip_addresses:
             - type: "V4"
               addr: "${site.ip_address}"
-      register: gslb_verify
-      
+      register: gslb_verify  
     - name: Display GSLB Siteops Verify
       ansible.builtin.debug:
         var: gslb_verify
-
     - name: Add GSLB Sites
       avi_api_session:
         avi_credentials: "{{ avi_credentials }}"
