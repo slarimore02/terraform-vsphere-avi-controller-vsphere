@@ -1,9 +1,13 @@
 output "controllers" {
-  description = "The AVI Controller(s) Information"
-  value = ([for item in vsphere_virtual_machine.avi_controller : merge(
-    { "name" = item.name },
-    { "private_ip_address" = item.default_ip_address }
+  description = "AVI Controller Information"
+  value = ([for key, value in local.controller_info : merge(
+    { "name" = key },
+    { "private_ip_address" = value }
     )
     ]
   )
+}
+output "gslb_ip" {
+  description = "The IP Address of AVI Controller Information"
+  value       = var.controller_ha ? var.controller_ip[3] : var.controller_ip[0]
 }

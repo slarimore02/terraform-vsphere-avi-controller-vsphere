@@ -18,12 +18,8 @@ locals {
     se_memory                       = var.se_size[1]
     se_disk                         = var.se_size[2]
     controller_ha                   = var.controller_ha
-    controller_ip_1                 = var.controller_ip[0]
-    controller_name_1               = var.controller_ha ? vsphere_virtual_machine.avi_controller[0].name : null
-    controller_ip_2                 = var.controller_ha ? var.controller_ip[1] : null
-    controller_name_2               = var.controller_ha ? vsphere_virtual_machine.avi_controller[1].name : null
-    controller_ip_3                 = var.controller_ha ? var.controller_ip[2] : null
-    controller_name_3               = var.controller_ha ? vsphere_virtual_machine.avi_controller[2].name : null
+    controller_ip                   = var.controller_ip
+    controller_names                = local.controller_names
     configure_ipam_profile          = var.configure_ipam_profile
     ipam_networks                   = var.configure_ipam_profile ? var.ipam_networks : null
     configure_dns_profile           = var.configure_dns_profile
@@ -42,6 +38,9 @@ locals {
     medium = [16, 32768]
     large  = [24, 49152]
   }
+  controller_names = vsphere_virtual_machine.avi_controller[*].name
+  controller_ips   = var.controller_ha ? [var.controller_ip[0], var.controller_ip[1], var.controller_ip[2]] : [var.controller_ip[0]]
+  controller_info  = zipmap(vsphere_virtual_machine.avi_controller[*].name, local.controller_ips)
 }
 resource "vsphere_folder" "avi" {
   path          = var.vm_folder
@@ -51,7 +50,7 @@ resource "vsphere_folder" "avi" {
 resource "vsphere_virtual_machine" "avi_controller" {
   count            = var.controller_ha ? 3 : 1
   name             = "${var.name_prefix}-avi-controller-${count.index + 1}"
-  resource_pool_id = var.compute_cluster != null ? data.vsphere_compute_cluster.avi[0].resource_pool_id : data.vsphere_resource_pool.pool.id
+  resource_pool_id = var.compute_cluster != null ? data.vsphere_compute_cluster.avi[0].resource_pool_id : data.vsphere_resource_pool.pool[0].id
   datastore_id     = data.vsphere_datastore.datastore.id
   num_cpus         = local.controller_sizes[var.controller_size][0]
   memory           = local.controller_sizes[var.controller_size][1]

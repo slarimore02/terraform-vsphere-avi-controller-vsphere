@@ -139,7 +139,7 @@ module "avi_controller_west" {
   gslb_site_name                  = "West1"
   gslb_domains                    = ["gslb.avidemo.net"]
   configure_gslb_additional_sites = "true"
-  additional_gslb_sites           = [{name = "East1", ip_address = module.avi_controller_east.controllers[0].private_ip_address , dns_vs_name = "DNS-VS"}]
+  additional_gslb_sites           = [{name = "East1", ip_address = module.avi_controller_east.gslb_ip , dns_vs_name = "DNS-VS"}]
 }
 
 module "avi_controller_east" {
@@ -184,7 +184,9 @@ module "avi_controller_east" {
 output "controllers_west" {
   value = module.avi_controller_west.controllers
 }
-
+output "gslb_leader_ip" {
+  value = module.avi_controller_west.gslb_ip
+}
 output "controllers_east" { 
   value = module.avi_controller_east.controllers
 }
@@ -238,7 +240,7 @@ https://avinetworks.com/docs/latest/system-limits/
 | controller\_default\_password | This is the default password for the Avi controller image and can be found in the image download page. | `string` | n/a | yes |
 | controller\_gateway | The IP Address of the gateway for the controller mgmt network | `string` | n/a | yes |
 | controller\_ha | If true a HA controller cluster is deployed and configured | `bool` | `"false"` | no |
-| controller\_ip | A list of IP Addresses that will be assigned to the Avi Controller(s). For a full HA deployment the list should contain 3 IP addresses | `list(string)` | n/a | yes |
+| controller\_ip | A list of IP Addresses that will be assigned to the Avi Controller(s). For a full HA deployment the list should contain 4 IP addresses. The first 3 addresses will be used for the individual controllers and the 4th IP address listed will be used as the Cluster IP | `list(string)` | n/a | yes |
 | controller\_mgmt\_portgroup | The vSphere portgroup name that the Avi Controller will use for management | `string` | n/a | yes |
 | controller\_netmask | The subnet mask of the controller mgmt network | `string` | n/a | yes |
 | controller\_password | The password that will be used authenticating with the Avi Controller. This password be a minimum of 8 characters and contain at least one each of uppercase, lowercase, numbers, and special characters | `string` | n/a | yes |
@@ -273,6 +275,7 @@ https://avinetworks.com/docs/latest/system-limits/
 
 | Name | Description |
 |------|-------------|
-| controllers | The AVI Controller(s) Information |
+| controllers | AVI Controller Information |
+| gslb\_ip | The IP Address of AVI Controller Information |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

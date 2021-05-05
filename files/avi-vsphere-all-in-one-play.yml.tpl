@@ -6,13 +6,17 @@
     - role: avinetworks.avisdk
   vars:
     avi_credentials:
-        controller: ${controller_ip_1}
+        controller: "{{ controller_ip[0] }}"
         username: "admin"
         password: "{{ password }}"
         api_version: ${avi_version}
     username: "admin"
     password: "{{ password }}"
     api_version: ${avi_version}
+    controller_ip:
+      ${ indent(6, yamlencode(controller_ip))}
+    controller_names:
+      ${ indent(6, yamlencode(controller_names))}
     cloud_name: "Default-Cloud"
     vsphere_user: ${vsphere_user}
     vsphere_server: ${vsphere_server}
@@ -55,14 +59,6 @@
 %{ endif ~}
 %{ if configure_gslb }
     gslb_site_name: ${gslb_site_name}
-%{ endif ~}
-    controller_ip_1: ${controller_ip_1}
-%{ if controller_ha ~}
-    controller_name_1: ${controller_name_1}
-    controller_name_2: ${controller_name_2}
-    controller_ip_2: ${controller_ip_2}
-    controller_name_3: ${controller_name_3}
-    controller_ip_3: ${controller_ip_3}
 %{ endif ~}
   tasks:
     - name: Wait for Controller to become ready
@@ -162,6 +158,15 @@
       retries: 5
       delay: 10
       register: vcenter_discovery
+    - name: Wait for Cloud status to be ready
+      avi_api_session:
+        avi_credentials: "{{ avi_credentials }}"
+        http_method: get
+        path: "cloud/{{ avi_cloud.obj.uuid }}/status"
+      until: cloudstatus.obj.state == "CLOUD_STATE_PLACEMENT_READY"
+      retries: 5
+      delay: 10
+      register: cloudstatus
     - name: Update SE Mgmt Network Object with Static Pool
       avi_network:
         avi_credentials: "{{ avi_credentials }}"
@@ -531,7 +536,7 @@
             password: "{{ password }}"
             ip_addresses:
               - type: "V4"
-                addr: "{{ controller_ip_1 }}"
+                addr: "{{ controller_ip[0] }}"
             enabled: True
             member_type: "GSLB_ACTIVE_MEMBER"
             port: 443
@@ -605,25 +610,25 @@
       avi_cluster:
         avi_credentials: "{{ avi_credentials }}"
         state: present
-        #virtual_ip:
-        #  type: V4
-        #  addr: "{{ controller_cluster_vip }}"
+        virtual_ip:
+          type: V4
+          addr: "{{ controller_ip[3] }}"
         nodes:
-            - name: "{{ controller_name_1 }}" 
+            - name: "{{ controller_names[0] }}" 
               password: "{{ password }}"
               ip:
                 type: V4
-                addr: "{{ controller_ip_1 }}"
-            - name: "{{ controller_name_2 }}"
+                addr: "{{ controller_ip[0] }}"
+            - name: "{{ controller_names[1] }}"
               password: "{{ password }}"
               ip:
                 type: V4
-                addr: "{{ controller_ip_2 }}"
-            - name: "{{ controller_name_3 }}"
+                addr: "{{ controller_ip[1] }}"
+            - name: "{{ controller_names[2] }}"
               password: "{{ password }}"
               ip:
                 type: V4
-                addr: "{{ controller_ip_3 }}"
+                addr: "{{ controller_ip[2] }}"
         name: "cluster01"
         tenant_uuid: "admin"
 %{ endif ~}

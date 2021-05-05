@@ -168,8 +168,12 @@ variable "compute_cluster" {
   default     = null
 }
 variable "controller_ip" {
-  description = "A list of IP Addresses that will be assigned to the Avi Controller(s). For a full HA deployment the list should contain 3 IP addresses"
+  description = "A list of IP Addresses that will be assigned to the Avi Controller(s). For a full HA deployment the list should contain 4 IP addresses. The first 3 addresses will be used for the individual controllers and the 4th IP address listed will be used as the Cluster IP"
   type        = list(string)
+  validation {
+    condition     = length(var.controller_ip) == 4 || length(var.controller_ip) == 1
+    error_message = "The controller_ip value must be a list of either 1 for a single node deployment or 4 IP Addresses if controller_ha is set to true."
+  }
 }
 variable "controller_netmask" {
   description = "The subnet mask of the controller mgmt network"
