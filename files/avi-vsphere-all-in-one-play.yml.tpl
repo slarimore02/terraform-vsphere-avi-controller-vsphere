@@ -47,9 +47,7 @@
       - server:
           addr: "${item.addr}"
           type: ${item.type}
-%{ endfor ~}
-    additional_gslb_sites:
-      ${ indent(6, yamlencode(additional_gslb_sites))}  
+%{ endfor ~}  
 %{ if configure_dns_profile ~}
     dns_service_domain: ${dns_service_domain}
 %{ endif ~}
@@ -59,6 +57,8 @@
 %{ endif ~}
 %{ if configure_gslb }
     gslb_site_name: ${gslb_site_name}
+    additional_gslb_sites:
+      ${ indent(6, yamlencode(additional_gslb_sites))}
 %{ endif ~}
   tasks:
     - name: Wait for Controller to become ready

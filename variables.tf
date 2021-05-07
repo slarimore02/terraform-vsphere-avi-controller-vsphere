@@ -61,7 +61,7 @@ variable "configure_dns_vs" {
 }
 variable "dns_vs_settings" {
   description = "The DNS Virtual Service settings. With the auto_allocate_ip option is set to \"true\" the VS IP address will be allocated via an IPAM profile. Valid options for type are V4 or V6. Example:{ auto_allocate_ip = \"true\", vs_ip = \"\", portgroup = \"dns-portgroup\", network = \"192.168.20.0/24\", type = \"V4\" }"
-  type        = object({ auto_allocate_ip = bool, vs_ip = string, portgroup = string, network = string, type = string, vs_ip = string })
+  type        = object({ auto_allocate_ip = bool, vs_ip = string, portgroup = string, network = string, type = string })
   default     = null
 }
 variable "configure_gslb" {
