@@ -8,6 +8,7 @@ locals {
     configure_se_mgmt_network       = var.configure_se_mgmt_network
     se_mgmt_network                 = var.configure_se_mgmt_network ? var.se_mgmt_network : null
     avi_version                     = var.avi_version
+    configure_cloud                 = var.configure_cloud
     dns_servers                     = var.dns_servers
     dns_search_domain               = var.dns_search_domain
     ntp_servers                     = var.ntp_servers

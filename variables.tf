@@ -39,6 +39,11 @@ variable "controller_size" {
     error_message = "Acceptable values are small, medium, or large."
   }
 }
+variable "configure_cloud" {
+  description = "Configure the Avi Cloud via Ansible after controller deployment. If not set to true this must be done manually with the desired config"
+  type        = bool
+  default     = "true"
+}
 variable "configure_ipam_profile" {
   description = "Configure Avi IPAM Profile for Virtual Service Address Allocation. If set to true the virtualservice_network variable must also be set"
   type        = bool
