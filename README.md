@@ -212,15 +212,15 @@ https://avinetworks.com/docs/latest/system-limits/
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.6 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | 3.0.0 |
-| <a name="requirement_vsphere"></a> [vsphere](#requirement\_vsphere) | ~> 1.26.0 |
+| <a name="requirement_null"></a> [null](#requirement\_null) | 3.1.1 |
+| <a name="requirement_vsphere"></a> [vsphere](#requirement\_vsphere) | ~> 2.2.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_null"></a> [null](#provider\_null) | 3.0.0 |
-| <a name="provider_vsphere"></a> [vsphere](#provider\_vsphere) | 1.26.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | 3.1.1 |
+| <a name="provider_vsphere"></a> [vsphere](#provider\_vsphere) | 2.2.0 |
 
 ## Modules
 
@@ -230,7 +230,7 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [null_resource.ansible_provisioner](https://registry.terraform.io/providers/hashicorp/null/3.0.0/docs/resources/resource) | resource |
+| [null_resource.ansible_provisioner](https://registry.terraform.io/providers/hashicorp/null/3.1.1/docs/resources/resource) | resource |
 | [vsphere_compute_cluster_vm_anti_affinity_rule.avi](https://registry.terraform.io/providers/hashicorp/vsphere/latest/docs/resources/compute_cluster_vm_anti_affinity_rule) | resource |
 | [vsphere_entity_permissions.avi_folder](https://registry.terraform.io/providers/hashicorp/vsphere/latest/docs/resources/entity_permissions) | resource |
 | [vsphere_entity_permissions.avi_root](https://registry.terraform.io/providers/hashicorp/vsphere/latest/docs/resources/entity_permissions) | resource |
