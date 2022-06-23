@@ -21,7 +21,9 @@
     vsphere_user: ${vsphere_user}
     vsphere_server: ${vsphere_server}
     vm_datacenter: ${vm_datacenter}
+	%{ if configure_se_mgmt_network ~}
     se_mgmt_portgroup: ${se_mgmt_portgroup}
+	%{ endif ~}
     dns_search_domain: ${dns_search_domain}
     ansible_become: yes
     ansible_become_password: "{{ password }}"
