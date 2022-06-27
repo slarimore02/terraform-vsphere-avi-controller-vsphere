@@ -232,9 +232,3 @@ variable "email_config" {
   type        = object({ smtp_type = string, from_email = string, mail_server_name = string, mail_server_port = string, auth_username = string, auth_password = string })
   default     = { smtp_type = "SMTP_LOCAL_HOST", from_email = "admin@avicontroller.net", mail_server_name = "localhost", mail_server_port = "25", auth_username = "", auth_password = "" }
 }
-
-variable "guest_net_timeout" {
-	description = "The amount of time to wait for guest networking to become available when deploying the AVI controller OVA."
-	type = number
-	default = 1
-}
