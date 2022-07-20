@@ -1,4 +1,7 @@
 # AVI Controller Deployment on vSphere Terraform module
+
+## Note: This repository has been archived and new versions are now available at https://github.com/vmware/terraform-vsphere-avi-alb-deployment-vsphere. Please use the new repository going forward.
+
 This Terraform module creates and configures an AVI (NSX Advanced Load-Balancer) Controller on vSphere
 
 ## Module Functions
